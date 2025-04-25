@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         "VND" to 25000.0
     )
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge()
