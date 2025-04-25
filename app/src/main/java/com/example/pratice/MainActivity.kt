@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
         "KRW" to 1350.0,
         "VND" to 25000.0
     )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge()
