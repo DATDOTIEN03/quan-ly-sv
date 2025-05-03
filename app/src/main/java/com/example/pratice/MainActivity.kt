@@ -65,8 +65,5 @@ class MainActivity : AppCompatActivity() {
         deleteBtn.setOnClickListener {
             viewModel.deleteStudent()
         }
-
-
     }
-
 }
