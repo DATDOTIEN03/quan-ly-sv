@@ -12,6 +12,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -63,7 +64,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         deleteBtn.setOnClickListener {
-            viewModel.deleteStudent()
+            val student = viewModel.selectedStudent
+            if (student != null) {
+                AlertDialog.Builder(this)
+                    .setTitle("Xác nhận xóa")
+                    .setMessage("Bạn có chắc chắn muốn xóa sinh viên \"${student.name}\" không?")
+                    .setPositiveButton("Xóa") { dialog, _ ->
+                        viewModel.deleteStudent()
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Hủy") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            } else {
+                Toast.makeText(this, "Vui lòng chọn sinh viên để xóa", Toast.LENGTH_SHORT).show()
+            }
+//            viewModel.deleteStudent()
         }
     }
 }
