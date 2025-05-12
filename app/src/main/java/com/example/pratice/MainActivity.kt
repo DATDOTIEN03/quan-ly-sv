@@ -80,7 +80,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Vui lòng chọn sinh viên để xóa", Toast.LENGTH_SHORT).show()
             }
-//            viewModel.deleteStudent()
         }
     }
 }
