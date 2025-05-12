@@ -51,13 +51,11 @@ class MainActivity : AppCompatActivity() {
         viewModel.students.observe(this) {
             adapter.setData(it)
         }
-
         addBtn.setOnClickListener {
             viewModel.addStudent(nameEdit.text.toString(), mssvEdit.text.toString())
             nameEdit.text.clear()
             mssvEdit.text.clear()
         }
-
         updateBtn.setOnClickListener {
             viewModel.updateStudent(nameEdit.text.toString(), mssvEdit.text.toString())
             adapter.notifyDataSetChanged()
