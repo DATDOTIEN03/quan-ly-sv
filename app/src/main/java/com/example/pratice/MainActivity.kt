@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity() {
             addStudentLauncher.launch(intent)
         }
 
-
         updateStudentLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
