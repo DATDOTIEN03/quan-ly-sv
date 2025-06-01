@@ -1,8 +1,12 @@
 package com.example.pratice
 
+import Student
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -12,71 +16,75 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pratice.adapters.StudentAdapter
-import com.example.pratice.viewmodels.StudentViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: StudentViewModel
     private lateinit var adapter: StudentAdapter
 
+    private lateinit var updateStudentLauncher: ActivityResultLauncher<Intent>
+
+    private lateinit var addStudentLauncher: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
-        setContentView(R.layout.list_view_test)
-        val nameEdit = findViewById<EditText>(R.id.nameEditText)
-        val mssvEdit = findViewById<EditText>(R.id.mssvEditText)
-        val addBtn = findViewById<Button>(R.id.addButton)
-        val updateBtn = findViewById<Button>(R.id.updateButton)
-        val deleteBtn = findViewById<Button>(R.id.deleteButton)
-        val recycler = findViewById<RecyclerView>(R.id.studentRecyclerView)
+        setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this).get(StudentViewModel::class.java)
+        viewModel = ViewModelProvider(this)[StudentViewModel::class.java]
 
-        adapter = StudentAdapter(onClick = { student ->
-            viewModel.selectedStudent = student
-            nameEdit.setText(student.name)
-            mssvEdit.setText(student.mssv)
-        })
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        adapter = StudentAdapter(
+            students = emptyList(),
+            onItemClick = {},
+            onUpdateClick = { student ->
+                val intent = Intent(this, UpdateStudentActivity::class.java)
+                intent.putExtra("student", student)
+                updateStudentLauncher.launch(intent)
+            },
+            onDeleteClick = { student ->
+                viewModel.deleteStudent(student)
+            }
+        )
 
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
 
-        viewModel.students.observe(this) {
-            adapter.setData(it)
+        viewModel.students.observe(this) { students ->
+            adapter.updateData(students)
         }
-        addBtn.setOnClickListener {
-            viewModel.addStudent(nameEdit.text.toString(), mssvEdit.text.toString())
-            nameEdit.text.clear()
-            mssvEdit.text.clear()
-        }
-        updateBtn.setOnClickListener {
-            viewModel.updateStudent(nameEdit.text.toString(), mssvEdit.text.toString())
-            adapter.notifyDataSetChanged()
+        val btnAddStudent = findViewById<Button>(R.id.btnAdd)
+        btnAddStudent.setOnClickListener {
+            val intent = Intent(this, AddStudentActivity::class.java)
+            addStudentLauncher.launch(intent)
         }
 
-        deleteBtn.setOnClickListener {
-            val student = viewModel.selectedStudent
-            if (student != null) {
-                AlertDialog.Builder(this)
-                    .setTitle("Xác nhận xóa")
-                    .setMessage("Bạn có chắc chắn muốn xóa sinh viên \"${student.name}\" không?")
-                    .setPositiveButton("Xóa") { dialog, _ ->
-                        viewModel.deleteStudent()
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("Hủy") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .show()
-            } else {
-                Toast.makeText(this, "Vui lòng chọn sinh viên để xóa", Toast.LENGTH_SHORT).show()
+
+        updateStudentLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val updatedStudent = result.data?.getSerializableExtra("updated_student") as? Student
+                updatedStudent?.let {
+                    viewModel.updateStudent(it)
+                }
+            }
+        }
+
+        addStudentLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val newStudent = result.data?.getSerializableExtra("new_student") as? Student
+                newStudent?.let {
+                    viewModel.addStudent(it)
+                }
             }
         }
     }

@@ -1,3 +1,6 @@
-package com.example.pratice.models
+import java.io.Serializable
 
-data class Student(val id: Int, var name: String, var mssv: String) {}
+data class Student(
+    var id: String,
+    var name: String
+) : Serializable
