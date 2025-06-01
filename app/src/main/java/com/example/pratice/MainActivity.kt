@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
         addStudentLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
