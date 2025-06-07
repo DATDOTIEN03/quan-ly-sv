@@ -34,7 +34,6 @@ class AddFragment : Fragment() {
                 Toast.makeText(context, "Nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
             viewModel.addStudent(Student(id, name))
             edtId.text.clear()
             edtName.text.clear()
